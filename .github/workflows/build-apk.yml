@@ -25,12 +25,25 @@ jobs:
         with:
           gradle-version: '8.7'
 
+      - name: Project folder dhundo
+        id: find
+        run: |
+          FILE=$(find . -name settings.gradle.kts | head -n 1)
+          if [ -z "$FILE" ]; then
+            echo "settings.gradle.kts repo me mili hi nahi"
+            exit 1
+          fi
+          DIR=$(dirname "$FILE")
+          echo "Project folder: $DIR"
+          echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+
       - name: Debug APK build
+        working-directory: ${{ steps.find.outputs.dir }}
         run: gradle assembleDebug --stacktrace
 
       - name: APK upload
         uses: actions/upload-artifact@v4
         with:
           name: DukanSaathi-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: ${{ steps.find.outputs.dir }}/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
