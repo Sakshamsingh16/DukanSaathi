@@ -14,6 +14,13 @@ jobs:
       - name: Code checkout
         uses: actions/checkout@v4
 
+      - name: Zip ho to khol do
+        run: |
+          find . -maxdepth 2 -name '*.zip' -not -path './.git/*' | while read -r z; do
+            echo "Unzip: $z"
+            unzip -o -q "$z" -d unzipped_app
+          done
+
       - name: Java 17 setup
         uses: actions/setup-java@v4
         with:
@@ -30,7 +37,7 @@ jobs:
         run: |
           FILE=$(find . -name settings.gradle.kts | head -n 1)
           if [ -z "$FILE" ]; then
-            echo "settings.gradle.kts repo me mili hi nahi"
+            echo "settings.gradle.kts repo me mili hi nahi - app ka zip upload karo"
             exit 1
           fi
           DIR=$(dirname "$FILE")
